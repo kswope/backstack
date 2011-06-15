@@ -1,0 +1,15 @@
+
+p {
+    font-size: 3em;
+    text-align: center;
+}
+
+p a {
+    margin: 2em;
+    padding: 5px;
+    border: solid 1px white;
+}
+
+p .here {
+    border: solid 1px red;
+}

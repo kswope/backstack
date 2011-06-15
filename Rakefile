@@ -2,6 +2,7 @@
 
 require 'rubygems'
 require 'bundler'
+
 begin
   Bundler.setup(:default, :development)
 rescue Bundler::BundlerError => e
@@ -9,6 +10,7 @@ rescue Bundler::BundlerError => e
   $stderr.puts "Run `bundle install` to install missing gems"
   exit e.status_code
 end
+
 require 'rake'
 
 require 'jeweler'
@@ -25,29 +27,28 @@ Jeweler::Tasks.new do |gem|
 end
 Jeweler::RubygemsDotOrgTasks.new
 
-require 'rake/testtask'
-Rake::TestTask.new(:test) do |test|
-  test.libs << 'lib' << 'test'
-  test.pattern = 'test/**/test_*.rb'
-  test.verbose = true
-end
-
-require 'rcov/rcovtask'
-Rcov::RcovTask.new do |test|
-  test.libs << 'test'
-  test.pattern = 'test/**/test_*.rb'
-  test.verbose = true
-  test.rcov_opts << '--exclude "gems/*"'
-end
-
 task :default => :test
+task :test => [:test_neutral, :test_rails]
 
-require 'rake/rdoctask'
-Rake::RDocTask.new do |rdoc|
-  version = File.exist?('VERSION') ? File.read('VERSION') : ""
-
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "backstack #{version}"
-  rdoc.rdoc_files.include('README*')
-  rdoc.rdoc_files.include('lib/**/*.rb')
+require 'rake/testtask'
+Rake::TestTask.new(:test_neutral) do |test|
+  test.libs << 'lib' << 'test/neutral'
+  test.pattern = 'test/neutral/**/test_*.rb'
+  test.verbose = true
 end
+
+# Bundler.setup (above) sets this and ruins rail's chance for loading
+# properly in the test below.  Somebody tell me why a gem is setting
+# ENV variables.
+ENV['BUNDLE_GEMFILE'] = nil
+
+desc "Run tests in rails root"
+rails_root = "test/rails_root"
+command = "rake"
+task :test_rails do |t|
+  chdir rails_root do
+    puts "*** descending into #{rails_root} and running '#{command}'"
+    system command
+  end
+end
+

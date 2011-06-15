@@ -1,0 +1,38 @@
+
+<%
+
+  def smart_link_to(t, c, a)
+
+    t = t.to_s
+    c = c.to_s
+    a = a.to_s
+
+    if c == params[:controller] && a == params[:action]
+      link_to(t, {:controller => c, :action => a}, :class => :here)
+    else
+      link_to(t, :controller => c, :action => a)
+    end
+
+  end
+
+%>
+
+
+<p>
+  <%= smart_link_to(:D, :c3, :d) %>
+  <%= smart_link_to(:E, :c3, :e) %>
+  <%= smart_link_to(:F, :c3, :f) %>
+</p>
+
+<p>
+  <%= smart_link_to(:B, :c2, :b) %>
+  <%= smart_link_to(:C, :c2, :c) %>
+</p>
+
+<p>
+  <%= smart_link_to(:A, :c1, :a) %>
+</p>
+
+<p>
+  <%= backstack_link("Back") %>
+</p>
