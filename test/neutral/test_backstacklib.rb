@@ -6,77 +6,80 @@ class TestBackstack < MiniTest::Unit::TestCase
 
   def test_push
 
+    # Note: even though we use symbols here its more likely the rails
+    # plugin will use strings.  I'm not sure what any other plugins
+    # will use.  The tested methods here should be string agnostic
+    # anyway.
+
     # starting with nothing in stack
     graph = {:c => [:a]}
     stack = []
-    stack = bs_push(graph, stack, :a, :c)
-    assert_equal [:a], stack
+    stack = bs_push(graph, stack, [:a, :path_a])
+    assert_equal [[:a, :path_a]], stack
 
     # further up graph
     graph = {:c => [:a], :f => [:c]}
-    stack = [:a]
-    stack = bs_push(graph, stack, :c, :f)
-    assert_equal [:a, :c], stack
+    stack = [[:a, :path_a]]
+    stack = bs_push(graph, stack, [:c, :path_c])
+    assert_equal [[:a, :path_a], [:c, :path_c]], stack
 
-    # reload of above
+    # reload of above, different path
     graph = {:c => [:a], :f => [:c]}
-    stack = [:a, :c]
-    stack = bs_push(graph, stack, :f, :f)
-    assert_equal [:a, :c], stack
+    stack = [[:a, :path_a], [:c, :path_c]]
+    stack = bs_push(graph, stack, [:c, :path_c2])
+    assert_equal [[:a, :path_a], [:c, :path_c2]], stack
+
+    # graph miss
+    graph = {:c => [:a], :f => [:c]}
+    stack = [[:a, :path_a]]
+    stack = bs_push(graph, stack, [:z, :path_z])
+    assert_equal [[:z, :path_z]], stack
 
     # back down
     graph = {:c => [:a], :f => [:c]}
-    stack = [:a, :c]
-    stack = bs_push(graph, stack, :f, :c)
-    assert_equal [:a], stack
+    stack = [[:a, :path_a], [:c, :path_c], [:f, :path_f]]
+    stack = bs_push(graph, stack, [:c, :path_c2])
+    assert_equal [[:a, :path_a], [:c, :path_c2]], stack
 
     # back down further
     graph = {:c => [:a], :f => [:c]}
-    stack = [:a]
-    stack = bs_push(graph, stack, :c, :a)
-    assert_equal [], stack
+    stack = [[:a, :path_a], [:c, :path_c]]
+    stack = bs_push(graph, stack, [:a, :path_a2])
+    assert_equal [[:a, :path_a2]], stack
+
 
     # side stepping
     graph = {:b => [:a], :c => [:a]}
-    stack = [:a]
-    stack = bs_push(graph, stack, :c, :b)
-    assert_equal [:a], stack
+    stack = [[:a, :path_a], [:c, :path_c]]
+    stack = bs_push(graph, stack, [:b, :path_b])
+    assert_equal [[:a, :path_a], [:b, :path_b]], stack
 
-    # lots of movement
+    ### lots of movement
 
     g = {:b => [:a], :c => [:a], :d => [:b, :c], :e => [:b, :c], :f => [:b, :c]}
 
     stack = []
 
-    stack = bs_push(g, stack, :a, :b)
-    assert_equal [:a], stack
+    stack = bs_push(g, stack, [:a, :path_a])
+    assert_equal [[:a, :path_a]], stack
 
-    stack = bs_push(g, stack, :b, :c)
-    assert_equal [:a], stack
+    stack = bs_push(g, stack, [:b, :path_b])
+    assert_equal [[:a, :path_a], [:b, :path_b]], stack
 
-    stack = bs_push(g, stack, :c, :f)
-    assert_equal [:a, :c], stack
+    stack = bs_push(g, stack, [:c, :path_c])
+    assert_equal [[:a, :path_a], [:c, :path_c]], stack
 
-    stack = bs_push(g, stack, :f, :d)
-    assert_equal [:a, :c], stack
+    stack = bs_push(g, stack, [:f, :f_path])
+    assert_equal [[:a, :path_a], [:c, :path_c], [:f, :f_path]], stack
 
-    stack = bs_push(g, stack, :e, :c)
-    assert_equal [:a], stack
+    stack = bs_push(g, stack, [:e, :path_e])
+    assert_equal [[:a, :path_a], [:c, :path_c], [:e, :path_e]], stack
 
-    stack = bs_push(g, stack, :c, :a)
-    assert_equal [], stack
+    stack = bs_push(g, stack, [:c, :path_c])
+    assert_equal [[:a, :path_a], [:c, :path_c]], stack
 
-    stack = bs_push(g, stack, :a, :b)
-    assert_equal [:a], stack
-
-    stack = bs_push(g, stack, :b, :f)
-    assert_equal [:a, :b], stack
-
-    # This motion is inconsistent with a rule of the backstack - only
-    # go back using the close links, don't go back another way (should
-    # this be a problem? seems like bad UX anyway)
-    stack = bs_push(g, stack, :f, :c) 
-    refute_equal [:a], stack
+    stack = bs_push(g, stack, [:a, :path_a])
+    assert_equal [[:a, :path_a]], stack
 
   end
 

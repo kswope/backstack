@@ -18,7 +18,7 @@ module BackStack
     # normalize controller and action to "controller#action", unless
     # second param already has "#".  This is up here in the class methods
     # because normalizing controller/actions is utilized both here
-    # and in the ApplicationControllers
+    # and in the ApplicationControllers objects
     def bs_action_normal(controller, x)
       x.to_s.index("#") ? "#{x}" : "#{controller}##{x}"
     end
@@ -53,7 +53,7 @@ module BackStack
         h
       end
 
-      puts "normalized @bs_graph #{@bs_graph}"
+      puts "@bs_graph #{@bs_graph}"
 
     end
 
@@ -77,14 +77,26 @@ module BackStack
 
   # these functions will be available in views
   module Helpers
+
     def backstack_link(text)
 
-      if back = session[:bs_stack].last
-        bc, ba = back.split "#"
-        link_to(text, :controller => bc, :action => ba)
+      bs_graph = controller.class.get_bs_graph # found it! lol
+
+      # if we don't have these we can't do anything
+      return unless session[:bs_stack] && bs_graph
+
+      # if the top of stack (current location) is stacked on top of
+      # link the graph indicates it closes to, then create a link from
+      # that.
+      current = session[:bs_stack][-1]
+      previous = session[:bs_stack][-2]
+
+      if bs_graph[current.first].include?(previous.first)
+        return link_to(text, previous.second)
       end
 
     end
+
   end
 
 
@@ -104,54 +116,17 @@ class ApplicationController < ActionController::Base
   include BackStackLib
 
   
-  def bs_current_action
-    self.class.bs_action_normal(controller_name, action_name)
+  def bs_action
+    [self.class.bs_action_normal(controller_name, action_name), request.fullpath]
   end
-
-
-#   # saves the url with the location so we can return to the full
-#   # path (includes path_info and whatnot)
-#   def bs_fullpath_cacher
-
-#     cache = session[:bs_fullpaths] || {}
-
-#     cache[bs_current_action] = request.fullpath
-
-#     puts "===> #{cache}"
-
-#     # garbage collect cache because we might have paths that no longer
-#     # have corresponding controller/action on the bs_stack (because
-#     # stack sometimes shrinks, obviously)
-#     cache = cache.delete_if {|k,v| 
-#       puts "delete if #{k} #{v}"
-#       puts (! session[:bs_stack].include?(k) )
-#       (! session[:bs_stack].include?(k) )
-#     }
-
-#     puts "===> #{cache}"
-
-
-#     session[:bs_fullpaths] = cache
-
-#   end
-
-
-
 
   def bs_pusher
 
     session[:bs_stack] = bs_push(self.class.get_bs_graph,
                                  session[:bs_stack], 
-                                 session[:bs_previous],
-                                 session[:bs_previous_fullpath]
-                                 bs_current_action)
+                                 bs_action)
 
-    session[:bs_previous] = bs_current_action # set for next time
-    session[:bs_previous_fullpath] = request.fullpath # set for next time
-
-    puts "current bs_stack #{session[:bs_stack]}"
-    puts "current bs_fullpaths #{session[:bs_fullpaths]}"
-    puts "path info is #{request.fullpath}"
+    puts "bs_stack #{session[:bs_stack]}"
 
   end
 
