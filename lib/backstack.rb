@@ -19,7 +19,7 @@ module BackStack
     # second param already has "#".  This is up here in the class methods
     # because normalizing controller/actions is utilized both here
     # and in the ApplicationControllers
-    def bs_action_normalizer(controller, x)
+    def bs_action_normal(controller, x)
       x.to_s.index("#") ? "#{x}" : "#{controller}##{x}"
     end
 
@@ -46,7 +46,7 @@ module BackStack
       # The complete value should look like "controller#action", for
       # both keys and values.
 
-      normalizer = lambda {|x| bs_action_normalizer(controller_name, x) }
+      normalizer = lambda {|x| bs_action_normal(controller_name, x) }
 
       @bs_graph = @bs_graph.inject({}) do |h, (k, v)|
         h[normalizer[k]] = v.map {|x| normalizer[x] }
@@ -104,8 +104,8 @@ class ApplicationController < ActionController::Base
   include BackStackLib
 
   
-  def bs_current_location
-    self.class.bs_action_normalizer(controller_name, action_name)
+  def bs_current_action
+    self.class.bs_action_normal(controller_name, action_name)
   end
 
 
@@ -115,7 +115,7 @@ class ApplicationController < ActionController::Base
 
 #     cache = session[:bs_fullpaths] || {}
 
-#     cache[bs_current_location] = request.fullpath
+#     cache[bs_current_action] = request.fullpath
 
 #     puts "===> #{cache}"
 
@@ -143,10 +143,11 @@ class ApplicationController < ActionController::Base
     session[:bs_stack] = bs_push(self.class.get_bs_graph,
                                  session[:bs_stack], 
                                  session[:bs_previous],
-                                 bs_current_location,
-                                 request.fullpath)
+                                 session[:bs_previous_fullpath]
+                                 bs_current_action)
 
-    session[:bs_previous] = bs_current_location # set for next time
+    session[:bs_previous] = bs_current_action # set for next time
+    session[:bs_previous_fullpath] = request.fullpath # set for next time
 
     puts "current bs_stack #{session[:bs_stack]}"
     puts "current bs_fullpaths #{session[:bs_fullpaths]}"

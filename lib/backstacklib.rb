@@ -31,9 +31,6 @@ module BackStackLib
   # moment I'm guessing that this will require no rewriting.
   def bs_add_edges(graph, edges)
 
-    graph ||= {}
-    edges ||= {}
-
     edges.each do |k,v| # k is a scalar or array, same with v
 
       [k].flatten.each do |x|
@@ -54,9 +51,6 @@ module BackStackLib
   # necessarily build stack up, it might cause a rewind and actually
   # shrink stack.
   def bs_push(graph, stack, previous, current, fullpath)
-
-    graph ||= {}
-    stack ||= []
 
     # if current exists on stack we need to rewind past it.
     if i = stack.index(current)
@@ -85,7 +79,6 @@ module BackStackLib
   # {:edges => {:c => :a}, :names => {:c => "Charlie"}}
   def bs_strip_names(graph)
 
-    graph ||= {}
     names_only = {}
     edges_only = {}
 
