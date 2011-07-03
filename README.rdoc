@@ -1,9 +1,10 @@
 = backstack
 
-If you are reading this is in extreme beta.
+This is in extreme beta.
 
 Backstack is a plugin (currently just rails) that dynamically and
-intelligently generates a "back" link.  Sounds so simple!
+intelligently generates a "back" link, or breadcrumb trail.  Sounds so
+simple, why wouldn't it be?
 
 
 == Contributing to backstack
