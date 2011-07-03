@@ -1,10 +1,24 @@
 = backstack
 
-This is in extreme beta.
+This is in extreme beta.  The docs are not yet written and will
+probably be supplimented with an illustrated blog posting.
 
-Backstack is a plugin (currently just rails) that dynamically and
+Backstack is a gem plugin (currently just rails) that dynamically and
 intelligently generates a "back" link, or breadcrumb trail.  Sounds so
 simple, why wouldn't it be?
+
+To get a quick idea of what it does, goes to the test/rails_root
+directory and 'rails server'
+
+The plugin guts are in:
+https://github.com/kswope/backstack/blob/master/lib/backstack.rb
+https://github.com/kswope/backstack/blob/master/lib/backstacklib.rb
+
+Non-plugin  tests are in:
+https://github.com/kswope/backstack/blob/master/test/neutral/test_backstacklib.rb
+
+Most rails tests are in:
+https://github.com/kswope/backstack/blob/master/test/rails_root/test/integration/backstack_test.rb
 
 
 == Contributing to backstack
