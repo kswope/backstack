@@ -1,6 +1,6 @@
 = backstack
 
-If you are reading this this is in extreme beta.
+If you are reading this is in extreme beta.
 
 Backstack is a plugin (currently just rails) that dynamically and
 intelligently generates a "back" link.  Sounds so simple!
