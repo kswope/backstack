@@ -11,7 +11,7 @@ To get a quick idea of what it does, goes to the test/rails_root
 directory and 'rails server'
 
 The plugin guts are in:
-https://github.com/kswope/backstack/blob/master/lib/backstack.rb
+https://github.com/kswope/backstack/blob/master/lib/backstack.rb and
 https://github.com/kswope/backstack/blob/master/lib/backstacklib.rb
 
 Non-plugin  tests are in:
