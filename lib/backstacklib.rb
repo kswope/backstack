@@ -10,11 +10,15 @@ module BackStackLib
   # be {}).  Normalized means key is not a collection data type (not
   # an array) but the value IS an array.
   #
-  # An example is {:b=>[:a], :c=>[:a]} which reads "b is connected to
-  # a and c is connected to a", or more relevantly "b closes to a and
-  # c closes to a".
+  # In other words, don't pass as the first argument anything that hasn't
+  # been already normalized by this method, or use {} to start
   #
-  # When method is run it combines the *already* normalized graph
+  # An example of normalized is {:b=>[:a], :c=>[:a], :z=>[:a, :x]}
+  # which reads "b is connected to a and c is connected to a and z is
+  # connected to both :a and :x", or more relevantly "b closes to a
+  # and c closes to a and z closes to both a and x".
+  #
+  # When this method is run it combines the *already* normalized graph
   # (could be {}), with a another graph description, which for
   # convenience can be in more of a shorthand, like {[:f, :e, :d] =>
   # :c}, which reads "f, e, and d all close to c"
@@ -27,16 +31,38 @@ module BackStackLib
   # something like this {[:d, :e, :f] => [:b, :c]}
   #
   # New feature: named nodes.  Instead of {:c => :a}, the "key" can be
-  # named like this {{:c => "Charlie"} => :a}.  At the moment I'm
-  # guessing that this will require no rewriting in this method.
-  def bs_add_edges(graph, edges)
+  # named like this {{:c => "Charlie"} => :a}.  We're going to remove
+  # those named keys, replace them with just the key, and return them as
+  # the second value
+  #
+  # Decided to allow user to pass a normalizer proc/lambda in to
+  # modify all the keys and values.
+  def bs_add_edges(graph, edges, normalizer=nil)
 
     graph ||= {}
+    names ||= {}
 
     edges.each do |k,v| # k is a scalar or array, same with v
 
+      # Does this [x].flatten idiom make it less readable?
       [k].flatten.each do |x|
 
+        # Extract names out into their own hash, and normalize key
+        if x.class == Hash # if its a hash it contains a name
+          names[x.first[0]] = x.first[1]
+          x = x.first[0] # remove name and replace with normal key
+        end
+
+        # Run normalizer on all keys and values of new edges
+        if normalizer
+          x = normalizer.call(x)
+          v = [v].flatten.map{|y| normalizer.call(y)}
+          # also run normalizer on names keys
+          names = Hash[names.map {|k,v| [normalizer.call(k), v]}]
+        end
+
+        # If merge finds dupe keys it will use block to determine
+        # value, which in our case is to combine the two values.
         graph.merge!(x => [v].flatten) do |key, old_v, new_v|
           [old_v, new_v].flatten
         end
@@ -45,31 +71,24 @@ module BackStackLib
 
     end
 
-    graph
+    [graph, names]
 
   end
 
   # Judging by graph, push onto stack if appropriate.  Pushing doesn't
   # necessarily build stack up, it might cause a rewind and actually
   # shrink stack.
-  def bs_push(graph, stack, action_full)
+  def bs_push(graph, stack, action, fullpath, name=nil)
 
     # bs_push might be called before there is a graph or stack
     graph ||= {}
     stack ||= []
 
-    action = action_full.first
-
-#     puts "==============="
-#     puts "graph #{graph}"
-#     puts "stack #{stack}"
-#     puts "action #{action}"
-#     puts "graph[action] #{graph[action]}"
-#     puts "stack.last #{stack.last}"
+    element = [action, fullpath, name]
 
     # if action closes to what's on top of stack, build stack up
     if graph[action] && stack.last && graph[action].include?(stack.last.first)
-      stack.push action_full
+      stack.push element
       return stack
     end
 
@@ -78,54 +97,19 @@ module BackStackLib
     # different)
     if i = stack.find_index {|x| x.first == action}
       stack = stack.slice(0,i)
-      stack.push action_full
+      stack.push element
       return stack
     end
 
     # if none of the clever stuff above happened then just replace top
     # of stack
     if stack.empty?
-      return [action_full]
+      return [element]
     else
-      stack[-1] = action_full
+      stack[-1] = element
       return stack
     end
 
   end
-
-  # Separate names out from the graph data structure.
-  #
-  # Note: to make things a lot easier *make sure* the input is
-  # normalized, in other words, run it through bs_add_edges first.
-  # Its a lot easier and probably not as buggy to normalize a simple
-  # datastructure with "names" than to strip them out while keeping
-  # the structure intact.
-  #
-  # Example: given {{:c => "Charlie"} => :a}
-  #
-  # returns a hash:
-  # {:edges => {:c => :a}, :names => {:c => "Charlie"}}
-  def bs_strip_names(graph)
-
-    names_only = {}
-    edges_only = {}
-
-    graph.each do |k,v|
-
-      # Because its normalized (right?) k can only be a single value
-      # or a size 1 hash
-      if k.class == Hash
-        names_only[k.first.first] = k.first.last
-        edges_only[k.first.first] = v
-      else
-        edges_only[k] = v
-      end
-
-    end
-
-    [edges_only, names_only]
-
-  end
-
 
 end

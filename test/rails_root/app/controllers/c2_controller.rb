@@ -1,6 +1,6 @@
 class C2Controller < ApplicationController
 
-  backstack [:b, :c] => "c1#a"
+  backstack [{:b => "Bravo"}, {:c => "Charlie"}] => "c1#a"
 
   def b
   end

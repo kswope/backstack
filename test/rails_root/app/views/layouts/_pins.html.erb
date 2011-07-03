@@ -1,38 +1,64 @@
 
 <%
 
-  def smart_link_to(t, c, a)
+  def smart_link_to(t, f)
 
-    t = t.to_s
-    c = c.to_s
-    a = a.to_s
-
-    if c == params[:controller] && a == params[:action]
-      link_to(t, {:controller => c, :action => a}, :class => :here)
+    if f == request.fullpath
+      link_to(t, f, :class => :here)
     else
-      link_to(t, :controller => c, :action => a)
+      link_to(t, f)
     end
 
   end
 
-%>
+  %>
+
+
+<%# trail demonstrating interator with block %>
+<p class="trail" id="link_trail">
+  <% backstack_trail do |c| %>
+    <% if c[:fullpath] == request.fullpath %>
+      <%= c[:name] %> /
+    <% else %>
+      <%= smart_link_to(c[:name], c[:fullpath]) %> /
+    <% end %>
+  <% end %>
+</p>
+
+
+<%# trail demonstrating calling without block returns array, no links this time %>
+<p class="trail" id="no_link_trail">
+
+  <% links = [] %>
+  <% backstack_trail.each {|c| links.push c[:name] } %>
+  <%= links.join(" / ").html_safe %>
+
+</p>
 
 
 <p>
-  <%= smart_link_to(:D, :c3, :d) %>
-  <%= smart_link_to(:E, :c3, :e) %>
-  <%= smart_link_to(:F, :c3, :f) %>
+  <%= smart_link_to("g", "/c4/g") %>
+  <%= smart_link_to("h", "/c4/h") %>
+  <%= smart_link_to("i", "/c4/i") %>
+  <%= smart_link_to("j", "/c4/j") %>
 </p>
 
 <p>
-  <%= smart_link_to(:B, :c2, :b) %>
-  <%= smart_link_to(:C, :c2, :c) %>
+  <%= smart_link_to("d", "/c3/d") %>
+  <%= smart_link_to("e", "/c3/e") %>
+  <%= smart_link_to("f", "/c3/f") %>
 </p>
 
 <p>
-  <%= smart_link_to(:A, :c1, :a) %>
+  <%= smart_link_to("b", "/c2/b") %>
+  <%= smart_link_to("c", "/c2/c") %>
 </p>
 
 <p>
-  <%= backstack_link("Back") %>
+  <%= smart_link_to("a", "/c1/a") %>
 </p>
+
+<p>
+  <%= backstack_link("Back", :id=>"back") %>
+</p>
+

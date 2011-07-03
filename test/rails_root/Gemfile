@@ -29,4 +29,5 @@ gem 'rails', '3.0.7'
 #   gem 'webrat'
 # end
 
+# this is for the local gem we are developing
 gem "backstack", :path => "../.."
