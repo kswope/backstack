@@ -2,7 +2,6 @@ class C1Controller < ApplicationController
 
   backstack({:a => "Alpha"} => nil)
 
-  def a
-  end
+  def a; end
 
 end
