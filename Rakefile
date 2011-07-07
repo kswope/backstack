@@ -19,8 +19,8 @@ Jeweler::Tasks.new do |gem|
   gem.name = "backstack"
   gem.homepage = "http://github.com/kswope/backstack"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{Rails plugin used to generate "back" links or a breadcrumb trail.}
+  gem.description = %Q{Rails plugin used to dynamically and intelligently generate "back" links or a breadcrumb trail.}
   gem.email = "git-kevdev@snkmail.com"
   gem.authors = ["Kevin Swope"]
   # dependencies defined in Gemfile
