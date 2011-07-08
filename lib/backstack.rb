@@ -34,7 +34,6 @@ module BackStack
       # request, and prod hopefully doesn't.  We'll write this module
       # to work correctly under both circumstances.
 
-
       # In rails we're going to use the string "controller#action" to
       # identify the page.  We're NOT going to let bs_add_edges
       # normalize that because it might be used for other frameworks.
@@ -43,8 +42,10 @@ module BackStack
       # both keys and values.
       normalizer = lambda {|x| bs_action_normal(controller_name, x) }
 
-      # add new edges to existing graph, and extract out the names
-      @bs_graph, @bs_names = bs_add_edges(@bs_graph, edges, normalizer)
+      # Add new edges to existing graph, and extract out the names.
+      # bs_add_edges will also accumulate names for us.
+      @bs_graph, @bs_names = bs_add_edges(@bs_graph, @bs_names, 
+                                          edges, normalizer)
 
     end
 
@@ -127,7 +128,7 @@ class ActionController::Base
   def backstack_dump
 
     # don't accidentally run in production
-    return if Rails.env == 'production'
+    return unless Rails.env == 'development'
 
     puts "=== backstack_dump() " + '=' * 50
 

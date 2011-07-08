@@ -1,16 +1,22 @@
 class C4Controller < ApplicationController
 
-  backstack([[:g => "Golf"], 
-             [:h => "Hotel"],
-             [:i => "India"],
-             [:j => "Juliet"]] => ["c3#d", "c3#e", "c3#f"])
+  # Regression test, names weren't working right when backstack was
+  # called multiple times, so lets do that here.
+  backstack({:g => "Golf"} => ["c3#d", "c3#e", "c3#f"])
+  backstack({:h => "Hotel"} => ["c3#d", "c3#e", "c3#f"])
+  backstack({:i => "India"} => ["c3#d", "c3#e", "c3#f"])
+  backstack({:j => "Juliet"} => ["c3#d", "c3#e", "c3#f"])
 
-  def g; end
+  def g;
+  end
 
-  def h; end
+  def h;
+  end
 
-  def i; end
+  def i;
+  end
 
-  def j; end
+  def j;
+  end
 
 end

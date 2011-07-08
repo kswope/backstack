@@ -94,68 +94,85 @@ class TestBackstack < MiniTest::Unit::TestCase
 
     graph = {} # existing graph
     edges = {:c => :a} # new edges
+    names = {}
     xp_graph = {:c => [:a]}
     xp_names = {}
-    assert_equal [xp_graph, xp_names], bs_add_edges(graph, edges)
+    assert_equal [xp_graph, xp_names], bs_add_edges(graph, names, edges)
 
     graph = {:b => [:a]}
     edges = {:c => :a} # value is not array
+    names = {}
     xp_graph = {:b => [:a], :c => [:a]}
     xp_names = {}
-    assert_equal [xp_graph, xp_names], bs_add_edges(graph, edges)
+    assert_equal [xp_graph, xp_names], bs_add_edges(graph, names, edges)
 
     graph = {:b => [:a]}
     edges = {:c => [:a]} # value is already array
+    names = {}    
     xp_graph = {:b => [:a], :c => [:a]}
     xp_names = {}
-    assert_equal [xp_graph, xp_names], bs_add_edges(graph, edges)
+    assert_equal [xp_graph, xp_names], bs_add_edges(graph, names, edges)
 
     graph = {:b => [:a]}
     edges = {:c => [:a], :c => [:a]} # dupe
+    names = {}    
     xp_graph = {:b => [:a], :c => [:a]}
     xp_names = {}
-    assert_equal [xp_graph, xp_names], bs_add_edges(graph, edges)
+    assert_equal [xp_graph, xp_names], bs_add_edges(graph, names, edges)
 
     graph = {:b => [:a], :c => [:a]}
     edges = {[:d, :e, :f] => [:b, :c]} # shorthand
+    names = {}    
     xp_graph = {:b => [:a], :c => [:a], :d => [:b, :c], :e => [:b, :c], :f => [:b, :c]}
     xp_names = {}
-    assert_equal [xp_graph, xp_names], bs_add_edges(graph, edges)
+    assert_equal [xp_graph, xp_names], bs_add_edges(graph, names, edges)
 
     # cumulative (names are ignored because aren't cumulative)
-    graph, _names = bs_add_edges({}, {:c => :a})
-    graph, _names = bs_add_edges(graph, {:b => [:a]})
-    graph, _names = bs_add_edges(graph, {[:d, :e, :f] => [:b, :c]})
+    graph, names = bs_add_edges({}, {}, {:c => :a})
+    graph, names = bs_add_edges(graph, names, {:b => [:a]})
+    graph, names = bs_add_edges(graph, names, {[:d, :e, :f] => [:b, :c]})
     xp_graph = {:c=>[:a], :b=>[:a], :d=>[:b, :c], :e=>[:b, :c], :f=>[:b, :c]}
-    assert_equal [xp_graph, {}], [graph, _names]
+    assert_equal [xp_graph, {}], [graph, names]
 
     # with named nodes
     graph = {} # graph is empty
     edges = {{:c => "Charlie"} => :a}
+    names = {}
     xp_graph = {:c => [:a]}
     xp_names = {:c => "Charlie"}
-    assert_equal [xp_graph, xp_names], bs_add_edges(graph, edges)
+    assert_equal [xp_graph, xp_names], bs_add_edges(graph, names, edges)
+
+    # with named nodes, accumulating names
+    graph = {} # graph is empty
+    edges = {{:c => "Charlie"} => :a}
+    names = {:z => "Zulu"} # kludge because it doesn't have an edge
+    xp_graph = {:c => [:a]}
+    xp_names = {:c => "Charlie", :z => "Zulu"}
+    assert_equal [xp_graph, xp_names], bs_add_edges(graph, names, edges)
 
     graph = {}
     edges = {{:c => "Charlie"} => :a}
+    names = {}
     xp_graph = {:c => [:a]}
     xp_names = {:c => "Charlie"}
-    assert_equal [xp_graph, xp_names], bs_add_edges(graph, edges)
+    assert_equal [xp_graph, xp_names], bs_add_edges(graph, names, edges)
 
     graph = {:b => [:a]}
     edges = {{:c => "Charlie"} => :a}
+    names = {}
     xp_graph = {:b => [:a], :c => [:a]}
     xp_names = {:c => "Charlie"}
-    assert_equal [xp_graph, xp_names], bs_add_edges(graph, edges)
+    assert_equal [xp_graph, xp_names], bs_add_edges(graph, names, edges)
 
     # test normalizer
     normalizer = lambda {|x| x.next }
 
     graph = {:b => [:a]}
     edges = {{:c => "Charlie"} => :a}
+    names = {}
     xp_graph = {:b => [:a], :d => [:b]}
     xp_names = {:d => "Charlie"}
-    assert_equal [xp_graph, xp_names], bs_add_edges(graph, edges, normalizer)
+    assert_equal [xp_graph, xp_names], bs_add_edges(graph, names, edges, normalizer)
 
   end
 

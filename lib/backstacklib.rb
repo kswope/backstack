@@ -37,7 +37,7 @@ module BackStackLib
   #
   # Decided to allow user to pass a normalizer proc/lambda in to
   # modify all the keys and values.
-  def bs_add_edges(graph, edges, normalizer=nil)
+  def bs_add_edges(graph, names, edges, normalizer=nil)
 
     graph ||= {}
     names ||= {}
