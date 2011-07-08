@@ -121,6 +121,26 @@ class ActionController::Base
 
   include BackStackLib
 
+  # Debugging method for calling inside controller, probably best as
+  # before_filter :backstack_dump
+  # in application_controller.rb
+  def backstack_dump
+
+    # don't accidentally run in production
+    return if Rails.env == 'production'
+
+    puts "=== backstack_dump() " + '=' * 50
+
+    puts "backstack graph: #{self.class.get_bs_graph}"
+    puts "backstack names: #{self.class.get_bs_names}"
+    puts "backstack stack: #{session[:bs_stack]}"
+
+    puts '=' * 71
+
+  end
+
+
+
   def bs_pusher
 
     action = self.class.bs_action_normal(controller_name, action_name)
