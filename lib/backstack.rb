@@ -114,10 +114,10 @@ ActionController::Base.send :include, BackStack
 ActionView::Helpers.send :include, BackStack::Helpers
 
 
-# Have to open this class here because ApplicationController is not
-# defined yet so we can't stick a before_filter on it - this is my
-# best guess right now.
-class ApplicationController < ActionController::Base
+# note, do not do this here:
+# class ApplicationController < ActionController::Base
+# it will prevent application_controller.rb from loading
+class ActionController::Base
 
   include BackStackLib
 
