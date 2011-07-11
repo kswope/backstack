@@ -1,7 +1,7 @@
 PATH
   remote: ../..
   specs:
-    backstack (0.0.0)
+    backstack (0.1.0)
 
 GEM
   remote: http://rubygems.org/

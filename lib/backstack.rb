@@ -42,15 +42,15 @@ module BackStack
       # both keys and values.
       normalizer = lambda {|x| bs_action_normal(controller_name, x) }
 
-      # Add new edges to existing graph, and extract out the names.
-      # bs_add_edges will also accumulate names for us.
-      @bs_graph, @bs_names = bs_add_edges(@bs_graph, @bs_names, 
+      # Add new edges to existing graph, and extract out the labels.
+      # bs_add_edges will also accumulate labels for us.
+      @bs_graph, @bs_labels = bs_add_edges(@bs_graph, @bs_labels, 
                                           edges, normalizer)
 
     end
 
     # So ApplicationController methods can reach @bs_graph and
-    # @bs_names.  I wanted to use @@bs_graph, so both AC::B and the
+    # @bs_labels.  I wanted to use @@bs_graph, so both AC::B and the
     # instance of AC could reach it, but this mysteriously breaks
     # rails routing!  So here are getters than we can use and access
     # from the AC instance as self.class.get_bs_graph.  RoR can be a
@@ -59,8 +59,8 @@ module BackStack
       @bs_graph
     end
 
-    def get_bs_names
-      @bs_names
+    def get_bs_labels
+      @bs_labels
     end
 
     send :include, InstanceMethods
@@ -94,7 +94,7 @@ module BackStack
 
       hashify = lambda{|x|
         c, a = x[0].split /#/
-        {:controller => c, :action => a, :fullpath => x[1], :name => x[2]}
+        {:controller => c, :action => a, :fullpath => x[1], :label => x[2]}
       }
 
       if block_given?
@@ -133,7 +133,7 @@ class ActionController::Base
     puts "=== backstack_dump() " + '=' * 50
 
     puts "backstack graph: #{self.class.get_bs_graph}"
-    puts "backstack names: #{self.class.get_bs_names}"
+    puts "backstack labels: #{self.class.get_bs_labels}"
     puts "backstack stack: #{session[:bs_stack]}"
 
     puts '=' * 71
@@ -150,7 +150,7 @@ class ActionController::Base
                                  session[:bs_stack], 
                                  action,
                                  request.fullpath,
-                                 self.class.get_bs_names[action])
+                                 self.class.get_bs_labels[action])
 
   end
 

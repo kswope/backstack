@@ -30,35 +30,35 @@ module BackStackLib
   # Note: the shorthand form of the edges parameter can be taken as far as
   # something like this {[:d, :e, :f] => [:b, :c]}
   #
-  # New feature: named nodes.  Instead of {:c => :a}, the "key" can be
-  # named like this {{:c => "Charlie"} => :a}.  We're going to remove
-  # those named keys, replace them with just the key, and return them as
+  # New feature: labeled nodes.  Instead of {:c => :a}, the "key" can be
+  # labeled like this {{:c => "Charlie"} => :a}.  We're going to remove
+  # those labeled keys, replace them with just the key, and return them as
   # the second value
   #
   # Decided to allow user to pass a normalizer proc/lambda in to
   # modify all the keys and values.
-  def bs_add_edges(graph, names, edges, normalizer=nil)
+  def bs_add_edges(graph, labels, edges, normalizer=nil)
 
     graph ||= {}
-    names ||= {}
+    labels ||= {}
 
     edges.each do |k,v| # k is a scalar or array, same with v
 
       # Does this [x].flatten idiom make it less readable?
       [k].flatten.each do |x|
 
-        # Extract names out into their own hash, and normalize key
-        if x.class == Hash # if its a hash it contains a name
-          names[x.first[0]] = x.first[1]
-          x = x.first[0] # remove name and replace with normal key
+        # Extract labels out into their own hash, and normalize key
+        if x.class == Hash # if its a hash it contains a label
+          labels[x.first[0]] = x.first[1]
+          x = x.first[0] # remove label and replace with normal key
         end
 
         # Run normalizer on all keys and values of new edges
         if normalizer
           x = normalizer.call(x)
           v = [v].flatten.map{|y| normalizer.call(y)}
-          # also run normalizer on names keys
-          names = Hash[names.map {|k,v| [normalizer.call(k), v]}]
+          # also run normalizer on labels keys
+          labels = Hash[labels.map {|k,v| [normalizer.call(k), v]}]
         end
 
         # If merge finds dupe keys it will use block to determine
@@ -71,20 +71,20 @@ module BackStackLib
 
     end
 
-    [graph, names]
+    [graph, labels]
 
   end
 
   # Judging by graph, push onto stack if appropriate.  Pushing doesn't
   # necessarily build stack up, it might cause a rewind and actually
   # shrink stack.
-  def bs_push(graph, stack, action, fullpath, name=nil)
+  def bs_push(graph, stack, action, fullpath, label=nil)
 
     # bs_push might be called before there is a graph or stack
     graph ||= {}
     stack ||= []
 
-    element = [action, fullpath, name]
+    element = [action, fullpath, label]
 
     # if action closes to what's on top of stack, build stack up
     if graph[action] && stack.last && graph[action].include?(stack.last.first)

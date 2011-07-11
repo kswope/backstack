@@ -18,9 +18,9 @@
 <p class="trail" id="link_trail">
   <% backstack_trail do |c| %>
     <% if c[:fullpath] == request.fullpath %>
-      <%= c[:name] %> /
+      <%= c[:label] %> /
     <% else %>
-      <%= smart_link_to(c[:name], c[:fullpath]) %> /
+      <%= smart_link_to(c[:label], c[:fullpath]) %> /
     <% end %>
   <% end %>
 </p>
@@ -29,9 +29,9 @@
 <%# trail demonstrating calling without block returns array, no links this time %>
 <p class="trail" id="no_link_trail">
 
-  <% links = [] %>
-  <% backstack_trail.each {|c| links.push c[:name] } %>
-  <%= links.join(" / ").html_safe %>
+  <% crumbs = [] %>
+  <% backstack_trail.each {|c| crumbs.push c[:label] } %>
+  <%= crumbs.join(" / ").html_safe %>
 
 </p>
 

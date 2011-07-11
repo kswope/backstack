@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{backstack}
-  s.version = "0.0.0"
+  s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Kevin Swope"]
-  s.date = %q{2011-07-07}
+  s.date = %q{2011-07-09}
   s.description = %q{Rails plugin used to dynamically and intelligently generate "back" links or a breadcrumb trail.}
   s.email = %q{git-kevdev@snkmail.com}
   s.extra_rdoc_files = [
