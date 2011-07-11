@@ -56,11 +56,11 @@ module BackStack
     # from the AC instance as self.class.get_bs_graph.  RoR can be a
     # real pit of dispair sometimes.
     def get_bs_graph
-      @bs_graph
+      @bs_graph || {}
     end
 
     def get_bs_labels
-      @bs_labels
+      @bs_labels || {}
     end
 
     send :include, InstanceMethods
@@ -94,7 +94,8 @@ module BackStack
 
       hashify = lambda{|x|
         c, a = x[0].split /#/
-        {:controller => c, :action => a, :fullpath => x[1], :label => x[2]}
+        label = x[2] || "#{a.capitalize}" # if forgot
+        {:controller => c, :action => a, :fullpath => x[1], :label => label}
       }
 
       if block_given?
