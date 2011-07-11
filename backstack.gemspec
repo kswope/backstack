@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{backstack}
-  s.version = "0.1.0"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Kevin Swope"]
-  s.date = %q{2011-07-09}
+  s.date = %q{2011-07-10}
   s.description = %q{Rails plugin used to dynamically and intelligently generate "back" links or a breadcrumb trail.}
   s.email = %q{git-kevdev@snkmail.com}
   s.extra_rdoc_files = [
@@ -24,7 +24,18 @@ Gem::Specification.new do |s|
     "README.rdoc",
     "Rakefile",
     "VERSION",
+    "art/animation/1.gif",
+    "art/animation/2.gif",
+    "art/animation/3.gif",
+    "art/animation/4.gif",
+    "art/animation/5.gif",
+    "art/animation/6.gif",
+    "art/animation/anim.gif",
+    "art/backlinks.gif",
+    "art/bowling_pins (Autosaved).graffle",
     "art/bowling_pins.graffle",
+    "art/complete.gif",
+    "art/idealized.gif",
     "backstack.gemspec",
     "lib/backstack.rb",
     "lib/backstacklib.rb",
