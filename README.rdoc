@@ -3,7 +3,7 @@
 Backstack is a gem plugin (currently just rails) that dynamically and
 intelligently generates a "back" link, or breadcrumb trail.
 
-There is a blog post here with the best documentation:
+Blog post has the the best documentation:
 http://kswope.com/2011/07/10/backstack-navigation-pattern-and-rails-plugin/
 
 For a demo go to the test/rails_root directory and 'rails server'
