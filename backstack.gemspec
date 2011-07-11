@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{backstack}
-  s.version = "0.2.0"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Kevin Swope"]
@@ -32,7 +32,6 @@ Gem::Specification.new do |s|
     "art/animation/6.gif",
     "art/animation/anim.gif",
     "art/backlinks.gif",
-    "art/bowling_pins (Autosaved).graffle",
     "art/bowling_pins.graffle",
     "art/complete.gif",
     "art/idealized.gif",
