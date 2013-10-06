@@ -1,54 +1,26 @@
-# encoding: utf-8
-
 require 'rubygems'
-require 'bundler'
-
-begin
-  Bundler.setup(:default, :development)
-rescue Bundler::BundlerError => e
-  $stderr.puts e.message
-  $stderr.puts "Run `bundle install` to install missing gems"
-  exit e.status_code
-end
-
 require 'rake'
+require 'rake/testtask'
 
-require 'jeweler'
-Jeweler::Tasks.new do |gem|
-  # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "backstack"
-  gem.homepage = "http://github.com/kswope/backstack"
-  gem.license = "MIT"
-  gem.summary = %Q{Rails plugin used to generate "back" links or a breadcrumb trail.}
-  gem.description = %Q{Rails plugin used to dynamically and intelligently generate "back" links or a breadcrumb trail.}
-  gem.email = "git-kevdev@snkmail.com"
-  gem.authors = ["Kevin Swope"]
-  # dependencies defined in Gemfile
-end
-Jeweler::RubygemsDotOrgTasks.new
+
 
 task :default => :test
-task :test => [:test_neutral, :test_rails]
+task :test => [:test_lib, :test_rails]
 
-require 'rake/testtask'
-Rake::TestTask.new(:test_neutral) do |test|
-  test.libs << 'lib' << 'test/neutral'
-  test.pattern = 'test/neutral/**/test_*.rb'
+
+
+Rake::TestTask.new(:test_lib) do |test|
+  test.libs << 'lib' << 'test'
+  test.pattern = 'test/backstack.rb'
   test.verbose = true
 end
 
-# Bundler.setup (above) sets this and ruins rail's chance for loading
-# properly in the test below.  Somebody tell me why a gem is setting
-# ENV variables.
-ENV['BUNDLE_GEMFILE'] = nil
 
-desc "Run tests in rails root"
-rails_root = "test/rails_root"
-command = "rake"
+
+desc 'Run rails tests'
 task :test_rails do |t|
-  chdir rails_root do
-    puts "*** descending into #{rails_root} and running '#{command}'"
-    system command
+  chdir "test/rails_root" do
+    system "rake"
   end
 end
 
