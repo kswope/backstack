@@ -1,0 +1,27 @@
+
+p {
+    font-size: 2em;
+    text-align: center;
+}
+
+p a {
+    margin: 1em;
+    padding: 5px;
+    border: solid 1px white; /* placeholder for red border */
+    text-decoration: none;
+}
+
+p .here {
+    border: solid 1px red;
+}
+
+
+p.trail {
+    text-align: left;
+    font-size: 1.5em;
+}
+
+p.trail a {
+    margin: 0;
+    padding: 0;
+}
