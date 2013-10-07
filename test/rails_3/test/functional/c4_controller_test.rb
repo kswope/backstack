@@ -1,4 +1,4 @@
-require 'test_helper'
+  require 'test_helper'
 
 class C4ControllerTest < ActionController::TestCase
   test "should get g" do

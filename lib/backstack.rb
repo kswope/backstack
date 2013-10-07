@@ -44,7 +44,7 @@ module BackStack
 
       # Add new edges to existing graph, and extract out the labels.
       # bs_add_edges will also accumulate labels for us.
-      @bs_graph, @bs_labels = bs_add_edges(@bs_graph, @bs_labels, 
+      @bs_graph, @bs_labels = bs_add_edges(@bs_graph, @bs_labels,
                                           edges, normalizer)
 
     end
@@ -69,6 +69,8 @@ module BackStack
 
   # These functions will be available in views
   module Helpers
+
+    puts "installing in helpers"
 
     def backstack_link(text, *args)
 
@@ -101,7 +103,7 @@ module BackStack
       if block_given?
         session[:bs_stack].each { |x| yield hashify.call(x) }
       else # return an array
-        session[:bs_stack].map { |x| hashify.call(x) }        
+        session[:bs_stack].map { |x| hashify.call(x) }
       end
 
     end
@@ -113,7 +115,10 @@ end
 
 
 ActionController::Base.send :include, BackStack
-ActionView::Helpers.send :include, BackStack::Helpers
+
+puts "telling helpers"
+# ActionView::Helpers.send :include, BackStack::Helpers
+ActionView::Base.send :include, BackStack::Helpers
 
 
 # note, do not do this here:
@@ -146,9 +151,9 @@ class ActionController::Base
   def bs_pusher
 
     action = self.class.bs_action_normal(controller_name, action_name)
-    
+
     session[:bs_stack] = bs_push(self.class.get_bs_graph,
-                                 session[:bs_stack], 
+                                 session[:bs_stack],
                                  action,
                                  request.fullpath,
                                  self.class.get_bs_labels[action])

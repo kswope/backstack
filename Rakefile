@@ -19,7 +19,10 @@ end
 
 desc 'Run rails tests'
 task :test_rails do |t|
-  chdir "test/rails_root" do
+  chdir "test/rails_3" do
+    system "rake"
+  end
+  chdir "test/rails_4" do
     system "rake"
   end
 end
