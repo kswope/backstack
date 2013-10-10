@@ -70,8 +70,6 @@ module BackStack
   # These functions will be available in views
   module Helpers
 
-    puts "installing in helpers"
-
     def backstack_link(text, *args)
 
       bs_graph = controller.class.get_bs_graph # found it! lol
@@ -116,7 +114,6 @@ end
 
 ActionController::Base.send :include, BackStack
 
-puts "telling helpers"
 # ActionView::Helpers.send :include, BackStack::Helpers
 ActionView::Base.send :include, BackStack::Helpers
 
