@@ -83,7 +83,8 @@ module BackStack
       current = session[:bs_stack][-1]
       previous = session[:bs_stack][-2]
 
-      if current && previous && bs_graph[current.first].include?(previous.first)
+      if current && previous && bs_graph[current.first] &&
+         bs_graph[current.first].include?(previous.first)
         return link_to(text, previous.second, *args)
       end
 
