@@ -15,6 +15,10 @@ p .here {
     border: solid 1px red;
 }
 
+p.ignore {
+  font-style: italic;
+  font-size: 1.5em;
+}
 
 p.trail {
     text-align: left;

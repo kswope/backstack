@@ -26,14 +26,6 @@ module BackStack
     # This is the "macro" you put at the top of your controllers
     def backstack(edges)
 
-      # Note: its a little hard to follow but @bs_graph is a instance
-      # variable of the class ApplicationController::Base (not an
-      # object of AC::B).  There will only be one in the rails runtime,
-      # and may behave differently depending on whether we're in dev
-      # or prod mode, because dev mode reloads classes with each
-      # request, and prod hopefully doesn't.  We'll write this module
-      # to work correctly under both circumstances.
-
       # In rails we're going to use the string "controller#action" to
       # identify the page.  We're NOT going to let bs_add_edges
       # normalize that because it might be used for other frameworks.
@@ -41,7 +33,7 @@ module BackStack
       # The complete value should look like "controller#action", for
       # both keys and values.
       normalizer = lambda {|x| bs_action_normal(controller_name, x) }
-
+  
       # Add new edges to existing graph, and extract out the labels.
       # bs_add_edges will also accumulate labels for us.
       @bs_graph, @bs_labels = bs_add_edges(@bs_graph, @bs_labels,

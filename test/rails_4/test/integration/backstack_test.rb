@@ -39,6 +39,11 @@ class BackstackTest < ActionDispatch::IntegrationTest
     assert_select *aback['/c2/c']
     assert_select *nolink['Alpha / Charlie / Foxtrot']
 
+    # testing backstack_ignore
+    get '/ic1/ignore'
+    assert_select *aback['/c2/c']
+    assert_select *nolink['Alpha / Charlie / Foxtrot']
+    #
     # testing clicky trail
     assert_select '#link_trail' do
       assert_select "a[href='/']", 'Alpha'
