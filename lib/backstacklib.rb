@@ -78,11 +78,17 @@ module BackStackLib
   # Judging by graph, push onto stack if appropriate.  Pushing doesn't
   # necessarily build stack up, it might cause a rewind and actually
   # shrink stack.
-  def bs_push(graph, stack, action, fullpath, label=nil)
+  def bs_push(graph, stack, ignore, action, fullpath, label=nil)
 
-    # bs_push might be called before there is a graph or stack
+    # bs_push might be called before there is a graph, stack, or ignore
     graph ||= {}
     stack ||= []
+    ignore ||= []
+
+    # short circuit if we should ignore this action
+    if ignore.include?(action)
+      return stack
+    end
 
     element = [action, fullpath, label]
 

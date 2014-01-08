@@ -4,87 +4,152 @@ class TestBackstack < MiniTest::Unit::TestCase
 
   include BackStackLib
 
-  def test_push
+  # Note: even though we use symbols here for controllers/actions its more
+  # likely the rails plugin will use strings.  I'm not sure what any other
+  # plugins will use.  The tested methods here should be string agnostic
+  # anyway.
 
-    # Note: even though we use symbols here its more likely the rails
-    # plugin will use strings.  I'm not sure what any other plugins
-    # will use.  The tested methods here should be string agnostic
-    # anyway.
+  # def bs_push(graph, stack, ignore, action, fullpath, name=nil)
 
-    # def bs_push(graph, stack, action, fullpath, name=nil)
+  def test_starting_with_nothing_on_stack
 
-    # starting with nothing in stack
     graph = {:c => [:a]}
     stack = []
-    stack = bs_push(graph, stack, :a, :path_a)
+    ignore = []
+    stack = bs_push(graph, stack, ignore, :a, :path_a)
     assert_equal [[:a, :path_a, nil]], stack
 
-    # starting with nothing in stack, with name
+  end
+
+
+  def test_starting_with_nothing_on_stack_with_name
+
     graph = {:c => [:a]}
     stack = []
-    stack = bs_push(graph, stack, :a, :path_a, :name)
+    ignore = []
+    stack = bs_push(graph, stack, ignore, :a, :path_a, :name)
     assert_equal [[:a, :path_a, :name]], stack
 
-    # further up graph
+  end
+
+
+  def test_further_up_graph
+
     graph = {:c => [:a], :f => [:c]}
     stack = [[:a, :path_a, nil]]
-    stack = bs_push(graph, stack, :c, :path_c)
+    ignore = []
+    stack = bs_push(graph, stack, ignore, :c, :path_c)
     assert_equal [[:a, :path_a, nil], [:c, :path_c, nil]], stack
 
-    # reload of above, different path
+  end
+
+
+  def test_reload
+
     graph = {:c => [:a], :f => [:c]}
     stack = [[:a, :path_a, nil], [:c, :path_c, nil]]
-    stack = bs_push(graph, stack, :c, :path_c2)
+    ignore = []
+    stack = bs_push(graph, stack, ignore, :c, :path_c2)
     assert_equal [[:a, :path_a, nil], [:c, :path_c2, nil]], stack
 
-    # graph miss
+  end
+
+
+  def test_graph_miss
+
     graph = {:c => [:a], :f => [:c]}
     stack = [[:a, :path_a]]
-    stack = bs_push(graph, stack, :z, :path_z)
+    ignore = []
+    stack = bs_push(graph, stack, ignore, :z, :path_z)
     assert_equal [[:z, :path_z, nil]], stack
 
-    # back down
+  end
+
+
+  def test_back_down
+
     graph = {:c => [:a], :f => [:c]}
     stack = [[:a, :path_a, nil], [:c, :path_c, nil], [:f, :path_f, nil]]
-    stack = bs_push(graph, stack, :c, :path_c2)
+    ignore = []
+    stack = bs_push(graph, stack, ignore, :c, :path_c2)
     assert_equal [[:a, :path_a, nil], [:c, :path_c2, nil]], stack
 
-    # back down further
+  end
+
+
+  def test_back_down_further
+
     graph = {:c => [:a], :f => [:c]}
     stack = [[:a, :path_a, nil], [:c, :path_c, nil]]
-    stack = bs_push(graph, stack, :a, :path_a2)
+    ignore = []
+    stack = bs_push(graph, stack, ignore, :a, :path_a2)
     assert_equal [[:a, :path_a2, nil]], stack
 
-    # side stepping
+  end
+
+
+  def test_side_stepping
+
     graph = {:b => [:a], :c => [:a]}
     stack = [[:a, :path_a, nil], [:c, :path_c, nil]]
-    stack = bs_push(graph, stack, :b, :path_b)
+    ignore = []
+    stack = bs_push(graph, stack, ignore, :b, :path_b)
     assert_equal [[:a, :path_a, nil], [:b, :path_b, nil]], stack
 
-    ### lots of movement
+  end
 
+
+  ### ignore stuff
+
+  def test_not_ignoring_x_collapsing_stack
+
+    graph = {:c => [:a], :f => [:c]}
+    stack = [[:a, :path_a, nil]]
+    ignore = []
+    stack = bs_push(graph, stack, ignore, :x, :path_x) # collapses stack
+    stack = bs_push(graph, stack, ignore, :c, :path_c)
+    assert_equal [[:c, :path_c, nil]], stack
+
+  end
+
+
+  def test_ignoring_stuff 
+
+    graph = {:c => [:a], :f => [:c]}
+    stack = [[:a, :path_a, nil]]
+    ignore = [:x, :y]
+    stack = bs_push(graph, stack, ignore, :x, :path_x) # wont collapse stack if ignored
+    stack = bs_push(graph, stack, ignore, :y, :path_y) # wont collapse stack if ignored
+    stack = bs_push(graph, stack, ignore, :c, :path_c)
+    assert_equal [[:a, :path_a, nil], [:c, :path_c, nil]], stack
+
+  end
+
+
+  def test_lots_of_movement
     g = {:b => [:a], :c => [:a], :d => [:b, :c], :e => [:b, :c], :f => [:b, :c]}
     stack = []
+    ignore = []
 
-    stack = bs_push(g, stack, :a, :path_a)
+    stack = bs_push(g, stack, ignore, :a, :path_a)
     assert_equal [[:a, :path_a, nil]], stack
 
-    stack = bs_push(g, stack, :b, :path_b)
+    stack = bs_push(g, stack, ignore, :b, :path_b)
     assert_equal [[:a, :path_a, nil], [:b, :path_b, nil]], stack
 
-    stack = bs_push(g, stack, :c, :path_c)
+    stack = bs_push(g, stack, ignore, :c, :path_c)
     assert_equal [[:a, :path_a, nil], [:c, :path_c, nil]], stack
 
-    stack = bs_push(g, stack, :f, :f_path)
+    stack = bs_push(g, stack, ignore, :f, :f_path)
     assert_equal [[:a, :path_a, nil], [:c, :path_c, nil], [:f, :f_path, nil]], stack
 
-    stack = bs_push(g, stack, :e, :path_e)
+    stack = bs_push(g, stack, ignore, :e, :path_e)
     assert_equal [[:a, :path_a, nil], [:c, :path_c, nil], [:e, :path_e, nil]], stack
 
-    stack = bs_push(g, stack, :c, :path_c)
+    stack = bs_push(g, stack, ignore, :c, :path_c)
     assert_equal [[:a, :path_a, nil], [:c, :path_c, nil]], stack
 
-    stack = bs_push(g, stack, :a, :path_a)
+    stack = bs_push(g, stack, ignore, :a, :path_a)
     assert_equal [[:a, :path_a, nil]], stack
 
   end
