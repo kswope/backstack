@@ -23,6 +23,23 @@ module BackStack
       x.to_s.index("#") ? "#{x}" : "#{controller}##{x}"
     end
 
+
+    def backstack_ignore(edges)
+
+      edges = [edges].flatten # make sure its an array
+
+      edges = edges.map do |edge|
+        bs_action_normal(controller_name, edge)
+      end
+
+      # @bs_graph is unique for each controller and shared across all sessions
+      # $bs_ignore is for all controllers, shared across all sessions and cant be a constant
+      # session[:bs_stack] is unique for a web session
+      $bs_ignore = edges
+
+    end
+
+
     # This is the "macro" you put at the top of your controllers
     def backstack(edges)
 
@@ -40,6 +57,7 @@ module BackStack
                                           edges, normalizer)
 
     end
+
 
     # So ApplicationController methods can reach @bs_graph and
     # @bs_labels.  I wanted to use @@bs_graph, so both AC::B and the
@@ -76,7 +94,7 @@ module BackStack
       previous = session[:bs_stack][-2]
 
       if current && previous && bs_graph[current.first] &&
-         bs_graph[current.first].include?(previous.first)
+        bs_graph[current.first].include?(previous.first)
         return link_to(text, previous.second, *args)
       end
 
@@ -114,6 +132,8 @@ ActionView::Base.send :include, BackStack::Helpers
 # note, do not do this here:
 # class ApplicationController < ActionController::Base
 # it will prevent application_controller.rb from loading
+# NOTE: unlike macros like backstack_ignore, a class method, these below are
+# called in actions.
 class ActionController::Base
 
   include BackStackLib
@@ -131,6 +151,7 @@ class ActionController::Base
     puts "backstack graph: #{self.class.get_bs_graph}"
     puts "backstack labels: #{self.class.get_bs_labels}"
     puts "backstack stack: #{session[:bs_stack]}"
+    puts "backstack ignore: #{$bs_ignore}"
 
     puts '=' * 71
 
@@ -144,6 +165,7 @@ class ActionController::Base
 
     session[:bs_stack] = bs_push(self.class.get_bs_graph,
                                  session[:bs_stack],
+                                 $bs_ignore,
                                  action,
                                  request.fullpath,
                                  self.class.get_bs_labels[action])

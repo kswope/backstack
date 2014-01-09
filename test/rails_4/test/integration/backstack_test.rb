@@ -39,11 +39,24 @@ class BackstackTest < ActionDispatch::IntegrationTest
     assert_select *aback['/c2/c']
     assert_select *nolink['Alpha / Charlie / Foxtrot']
 
-    # testing backstack_ignore
-    get '/ic1/ignore'
+    # # testing backstack_ignore - shouldnt change above
+    # backstack_ignore('ic1#ignore1') is set in application_controller.rb
+    get '/ic1/ignore1'
+    # assert_select *aback['/c2/c'] # back link disappears, is that ok?
+    assert_select *nolink['Alpha / Charlie / Foxtrot']
+ 
+    # # testing backstack_ignore - *should* change above
+    # backstack_ignore('ic2#ignore2') is not set in application_controller.rb
+    get '/ic2/ignore2'
+    # assert_select *aback['/c2/c'] # back link disappears, is that ok?
+    assert_select *nolink['Alpha / Charlie / Ignore2']
+
+    # fix mess we made above 
+    get '/c3/f'
     assert_select *aback['/c2/c']
     assert_select *nolink['Alpha / Charlie / Foxtrot']
-    #
+    
+    
     # testing clicky trail
     assert_select '#link_trail' do
       assert_select "a[href='/']", 'Alpha'

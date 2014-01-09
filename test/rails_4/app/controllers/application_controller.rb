@@ -5,4 +5,6 @@ class ApplicationController < ActionController::Base
 
   before_filter :backstack_dump # for debugging
 
+  backstack_ignore("ic1#ignore1")
+
 end
