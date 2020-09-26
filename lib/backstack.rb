@@ -172,7 +172,7 @@ class ActionController::Base
 
   end
 
-  before_filter :bs_pusher
+  before_action :bs_pusher
 
 end
 
